@@ -90,9 +90,13 @@ func Load() *Config {
 
 // PostgresDSN returns the full PostgreSQL connection string.
 func (c *Config) PostgresDSN() string {
+	if rawURL := os.Getenv("DATABASE_URL"); rawURL != "" {
+		return rawURL
+	}
+	sslMode := envOrDefault("POSTGRES_SSLMODE", "disable")
 	return fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		c.PostgresHost, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresDB,
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		c.PostgresHost, c.PostgresPort, c.PostgresUser, c.PostgresPassword, c.PostgresDB, sslMode,
 	)
 }
 
